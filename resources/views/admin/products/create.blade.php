@@ -1,11 +1,18 @@
-@extends('layouts.admin')
+@extends('admin.admin')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-8">
 
     <div>
+        <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+            <a href="{{ url('/admin/dashboard') }}" class="hover:text-red-600 transition-colors">Dashboard</a>
+            <span>/</span>
+            <a href="{{ route('admin.products.index') }}" class="hover:text-red-600 transition-colors">Produk</a>
+            <span>/</span>
+            <span class="text-gray-900">Tambah</span>
+        </div>
         <h1 class="text-2xl font-semibold text-gray-900">Tambah Produk</h1>
-        <p class="text-gray-600 text-sm mt-1">Tambahkan produk baru ke katalog dengan mudah</p>
+        <p class="text-gray-600 text-sm mt-1">Tambahkan produk baru ke katalog</p>
     </div>
 
     {{-- Error --}}
@@ -58,7 +65,7 @@
         {{-- Stok --}}
         <div>
             <label for="stock" class="block text-sm font-medium text-gray-700 mb-2">Stok</label>
-            <input type="number" id="stock" name="stock" value="{{ old('stock', 0) }}"
+            <input type="number" id="stock" name="stock" value="{{ old('stock') }}"
                 class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-200"
                 placeholder="Masukkan jumlah stok"
                 min="0"
@@ -91,7 +98,7 @@
                     </svg>
                     <div class="flex text-sm text-gray-600">
                         <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
-                            <span>Unggah file</span>
+                            <span>Unggah file baru</span>
                             <input id="image" name="image" type="file" class="sr-only" accept="image/*">
                         </label>
                         <p class="pl-1">atau seret dan jatuhkan</p>

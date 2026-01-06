@@ -10,8 +10,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-        return view('admin.orders.index', compact('users'));
+        $users = User::where('role', '!=', 'admin')->get(); // Show only non-admin users
+        return view('admin.users.index', compact('users'));
     }
 
     public function show(User $user)

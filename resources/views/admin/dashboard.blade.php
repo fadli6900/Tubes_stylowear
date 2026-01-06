@@ -1,7 +1,7 @@
 @extends('admin.admin')
 
 @section('content')
-<div class="space-y-12">
+<div class="space-y-12 fade-in">
 
     {{-- HEADER --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

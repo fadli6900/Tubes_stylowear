@@ -5,6 +5,11 @@
     {{-- Header Section --}}
     <div class="flex justify-between items-center">
         <div>
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                <a href="{{ url('/admin/dashboard') }}" class="hover:text-red-600 transition-colors">Dashboard</a>
+                <span>/</span>
+                <span class="text-gray-900">Produk</span>
+            </div>
             <h1 class="text-2xl font-semibold text-gray-900">Daftar Produk</h1>
             <p class="text-gray-600 text-sm mt-1">Kelola katalog produk Anda dengan mudah</p>
         </div>
@@ -100,7 +105,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-16 text-center text-gray-500">
+                        <td colspan="6" class="px-6 py-16 text-center text-gray-500">
                             <div class="flex flex-col items-center gap-3">
                                 <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -114,6 +119,11 @@
                 </tbody>
             </table>
         </div>
+        @if(method_exists($products, 'hasPages') && $products->hasPages())
+            <div class="px-6 py-4 border-t border-gray-100">
+                {{ $products->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

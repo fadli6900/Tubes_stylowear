@@ -1,9 +1,16 @@
-@extends('layouts.admin')
+@extends('admin.admin')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-8">
 
     <div>
+        <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+            <a href="{{ url('/admin/dashboard') }}" class="hover:text-red-600 transition-colors">Dashboard</a>
+            <span>/</span>
+            <a href="{{ route('admin.products.index') }}" class="hover:text-red-600 transition-colors">Produk</a>
+            <span>/</span>
+            <span class="text-gray-900">Edit</span>
+        </div>
         <h1 class="text-2xl font-semibold text-gray-900">Edit Produk</h1>
         <p class="text-gray-600 text-sm mt-1">Perbarui informasi produk</p>
     </div>
