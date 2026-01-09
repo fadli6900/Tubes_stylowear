@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StyloWear - Fashion Store</title>
     <style>
+
         /* Dasar & Font */
         * {
             box-sizing: border-box;
@@ -235,23 +236,47 @@
 
 <nav class="navbar">
     <a href="#" class="brand">Stylo<span>Wear</span></a>
-    <div class="nav-links">
-        @if (Route::has('login'))
-            @auth
-                @if(auth()->user()->role === 'admin')
-                    <a href="{{ route('admin.dashboard') }}">Dashboard Admin</a>
+    
+    <!-- Navbar Logic -->
+    <div class="flex items-center gap-4" style="display: flex; align-items: center; gap: 15px;">
+    @if (Route::has('login'))
+        @auth
+            <!-- Tampilan jika user SUDAH Login -->
+            <div class="flex items-center gap-4">
+                <span style="margin-right: 10px; color: #555;">
+                    Halo, {{ Auth::user()->name }}
+                </span>
+                
+                @if(Auth::user()->role === 'admin')
+                     <a href="{{ route('admin.dashboard') }}" style="color: #dc143c; text-decoration: none; margin-right: 10px; font-weight: 600;">
+                        Dashboard
+                    </a>
                 @else
-                    <a href="{{ route('dashboard') }}">Dashboard</a>
+                    <a href="{{ route('profile.edit') }}" style="color: #dc143c; text-decoration: none; margin-right: 10px; font-weight: 600;">
+                        Profil
+                    </a>
                 @endif
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+
+                <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn-logout">Logout</button>
+                    <button type="submit" class="btn-logout">
+                        Keluar
+                    </button>
                 </form>
-            @else
-                <a href="#" onclick="openModal()" class="btn-login">Log in</a>
-            @endauth
-        @endif
-    </div>
+            </div>
+        @else
+            <!-- Tampilan jika user BELUM Login (Tamu) -->
+            <div class="flex items-center gap-3">
+                <a href="{{ route('login') }}" class="btn-login" style="background: transparent; color: #333 !important; border: 1px solid #ccc;">
+                    Masuk
+                </a>
+                <a href="{{ route('register') }}" class="btn-login">
+                    Daftar
+                </a>
+            </div>
+        @endauth
+    @endif
+</div>
 </nav>
 
 <div class="container">
@@ -268,7 +293,7 @@
                 </div>
                 
                 <div class="product-info">
-                    <div class="product-category">{{ $product->category->name ?? 'Fashion' }}</div>
+                    <div class="product-category">{{ optional($product->category)->name ?? 'Fashion' }}</div>
                     <h3 class="product-title" title="{{ $product->name }}">{{ $product->name }}</h3>
                     <div class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                     

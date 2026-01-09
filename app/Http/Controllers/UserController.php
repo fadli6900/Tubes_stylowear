@@ -35,12 +35,22 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'city' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'address' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:20',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'city' => $request->city,
+            'country' => $request->country,
+            'address' => $request->address,
+            'postal_code' => $request->postal_code,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
@@ -61,7 +71,7 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
-        if ($user->id !== Auth::id()) {
+        if ($user->id !== Auth::id() && Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
         return view('users.edit', compact('user'));
@@ -73,16 +83,21 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        if ($user->id !== Auth::id()) {
+        if ($user->id !== Auth::id() && Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'city' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'address' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:20',
         ]);
 
-        $user->update($request->only('name', 'email'));
+        $user->update($request->only('name', 'email', 'phone', 'city', 'country', 'address', 'postal_code'));
 
         return redirect()->route('users.show', $user)->with('success', 'User updated successfully.');
     }
@@ -93,7 +108,7 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
-        if ($user->id !== Auth::id()) {
+        if ($user->id !== Auth::id() && Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
 

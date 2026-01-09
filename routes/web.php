@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Product;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,24 +21,14 @@ Route::get('/', function () {
 });
 
 Route::get('/welcome', function () {
-    return view('welcome');
+    $products = Product::latest()->take(12)->get();
+    return view('welcome', compact('products'));
 })->name('welcome');
 
 // Route Detail Produk (Publik/Tanpa Login)
 Route::get('/product/{product}', function (Product $product) {
     return view('product-detail', compact('product'));
 })->name('product.show');
-
-// Route Login & Register (Manual Fix)
-Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-});
-
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth')->name('logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -78,9 +70,40 @@ Route::middleware(['auth', 'admin'])
             ->name('logout');
 });
 
+
+// Routes untuk Login & Register
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Auth Routes (Laravel Breeze)
 |--------------------------------------------------------------------------
 */
-require __DIR__.'/auth.php';
+require __DIR__.'/auth.php'; 
+// Komentari baris di atas jika Anda ingin menggunakan AuthController custom sepenuhnya,
+// atau pastikan route custom Anda berada DI BAWAH baris ini.
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+// Route::post('/login', [LoginController::class, 'login']);
+// Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth', 'role:buyer'])->group(function () {
+    Route::get('/buyer/dashboard', function () {
+        return view('buyer.dashboard');
+    })->name('buyer.dashboard');
+});
+
+// Route untuk registrasi buyer
+Route::get('/register/buyer', function () {
+    return view('auth.register_buyer');
+})->name('register.buyer');
+
+Route::post('/register/buyer', [AuthController::class, 'registerBuyer'])->name('register.buyer');
