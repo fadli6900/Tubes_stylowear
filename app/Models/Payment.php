@@ -16,7 +16,7 @@ class Payment extends Model
     ];
 
     /**
-     * Relasi: Payment milik satu Order
+     * Payment belongs to an Order
      */
     public function order()
     {
