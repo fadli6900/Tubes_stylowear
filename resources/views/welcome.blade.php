@@ -239,6 +239,16 @@
     
     <!-- Navbar Logic -->
     <div class="flex items-center gap-4" style="display: flex; align-items: center; gap: 15px;">
+        <!-- Link Keranjang -->
+        <a href="{{ route('cart.index') }}" style="text-decoration: none; color: #333; font-weight: 500; display: flex; align-items: center; margin-right: 10px;">
+            Keranjang
+            @if(session('cart'))
+                <span style="background: #dc143c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; margin-left: 5px;">
+                    {{ count(session('cart')) }}
+                </span>
+            @endif
+        </a>
+
     @if (Route::has('login'))
         @auth
             <!-- Tampilan jika user SUDAH Login -->
@@ -246,6 +256,10 @@
                 <span style="margin-right: 10px; color: #555;">
                     Halo, {{ Auth::user()->name }}
                 </span>
+
+                <a href="{{ route('orders.index') }}" style="color: #333; text-decoration: none; margin-right: 10px; font-weight: 500;">
+                    Riwayat Belanja
+                </a>
                 
                 @if(Auth::user()->role === 'admin')
                      <a href="{{ route('admin.dashboard') }}" style="color: #dc143c; text-decoration: none; margin-right: 10px; font-weight: 600;">
@@ -280,6 +294,28 @@
 </nav>
 
 <div class="container">
+    <!-- Search Bar & Filter Kategori -->
+    <div style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <form action="{{ url('/') }}" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            
+            <!-- Dropdown Kategori -->
+            <select name="category_id" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
+                <option value="">Semua Kategori</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <!-- Input Pencarian -->
+            <input type="text" name="search" placeholder="Cari nama produk..." value="{{ request('search') }}" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+
+            <!-- Tombol Cari -->
+            <button type="submit" style="background: #dc143c; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-weight: 600;">Cari</button>
+        </form>
+    </div>
+
     <h2 class="section-title">Koleksi Terbaru</h2>
 
     <div class="product-grid">

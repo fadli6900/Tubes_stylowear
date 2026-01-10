@@ -21,13 +21,15 @@ class CartController extends Controller
     {
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
+        $quantity = (int) $request->input('quantity', 1);
+        if ($quantity < 1) $quantity = 1;
 
         if(isset($cart[$id])) {
-            $cart[$id]['quantity']++;
+            $cart[$id]['quantity'] += $quantity;
         } else {
             $cart[$id] = [
                 "name" => $product->name,
-                "quantity" => 1,
+                "quantity" => $quantity,
                 "price" => $product->price,
                 "image" => $product->image ?? null // Asumsi ada kolom image
             ];
@@ -35,6 +37,16 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+    }
+
+    public function update(Request $request)
+    {
+        if($request->id && $request->quantity){
+            $cart = session()->get('cart');
+            $cart[$request->id]["quantity"] = $request->quantity;
+            session()->put('cart', $cart);
+            return redirect()->back()->with('success', 'Keranjang berhasil diperbarui!');
+        }
     }
 
     public function remove($id)

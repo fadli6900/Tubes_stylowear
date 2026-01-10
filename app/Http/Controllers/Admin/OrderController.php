@@ -63,4 +63,10 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }
+
+    public function confirm(Order $order)
+    {
+        $order->update(['status' => 'processing']);
+        return redirect()->back()->with('success', 'Pesanan berhasil dikonfirmasi.');
+    }
 }

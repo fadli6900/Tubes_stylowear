@@ -40,7 +40,13 @@
                         <td class="px-6 py-4">{{ $order->created_at->format('d M Y') }}</td>
                         <td class="px-6 py-4 text-right space-x-2">
                             <a href="{{ route('admin.orders.show', $order) }}" class="text-indigo-400 hover:text-indigo-300">View</a>
-                            <a href="{{ route('admin.orders.edit', $order) }}" class="text-blue-400 hover:text-blue-300">Edit</a>
+                            @if($order->status === 'pending')
+                            <form action="{{ route('admin.orders.confirm', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Konfirmasi pesanan ini?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="text-emerald-400 hover:text-emerald-300">Konfirmasi</button>
+                            </form>
+                            @endif
                             <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this order?');">
                                 @csrf
                                 @method('DELETE')

@@ -118,7 +118,14 @@
                 <div class="price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                 <p class="description">{{ $product->description }}</p>
                 
-                <button class="btn-buy">Beli Sekarang</button>
+                <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 15px; display: flex; align-items: center;">
+                        <label for="quantity" style="margin-right: 10px; font-weight: bold;">Jumlah:</label>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <button type="submit" class="btn-buy">Tambah ke Keranjang</button>
+                </form>
             </div>
         </div>
     </div>

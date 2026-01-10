@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Product;
+use App\Models\Category;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
@@ -17,9 +19,23 @@ use App\Http\Controllers\CheckoutController;
 | Public / Guest Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    $products = Product::latest()->take(12)->get();
-    return view('welcome', compact('products'));
+Route::get('/', function (Request $request) {
+    // Ambil kategori untuk dropdown
+    $categories = Category::orderBy('name')->get();
+
+    // Query Produk dengan Filter
+    $query = Product::with('category')->latest();
+
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+    if ($request->filled('search')) {
+        $query->where('name', 'like', '%' . $request->search . '%');
+    }
+
+    $products = $query->paginate(12);
+    
+    return view('welcome', compact('products', 'categories'));
 });
 
 Route::get('/welcome', function () {
@@ -31,6 +47,12 @@ Route::get('/welcome', function () {
 Route::get('/product/{product}', function (Product $product) {
     return view('product-detail', compact('product'));
 })->name('product.show');
+
+// Route Keranjang (Cart) - Dipindahkan ke sini agar bisa diakses tanpa login
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
 /*
 |--------------------------------------------------------------------------
@@ -49,15 +71,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
 
-    // Route Keranjang (Cart)
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-
     // Route Pembayaran (Checkout)
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+
+    // Route Riwayat Belanja (User)
+    Route::get('/my-orders', [\App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/my-orders/{order}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
 });
 
 /*
@@ -75,6 +96,7 @@ Route::middleware(['auth', 'admin'])
         Route::resource('categories', CategoryController::class);
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
+        Route::patch('/orders/{order}/confirm', [\App\Http\Controllers\Admin\OrderController::class, 'confirm'])->name('orders.confirm');
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
         // Admin Logout Route

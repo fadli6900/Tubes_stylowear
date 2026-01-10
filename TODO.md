@@ -1,4 +1,0 @@
-- [ ] Update resources/views/admin/categories/index.blade.php to use card-based grid layout instead of table
-- [ ] Ensure each card includes category image, name, description, and action buttons (edit/delete)
-- [ ] Use responsive grid classes for mobile-friendly design
-- [ ] Maintain dark theme and minimalist styling
