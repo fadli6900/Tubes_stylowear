@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
@@ -22,6 +23,19 @@ class ReportController extends Controller
         $labels = $productStats->pluck('name');
         $data = $productStats->pluck('total_qty');
 
-        return view('admin.reports.index', compact('labels', 'data'));
+        // 2. Produk dengan Stok Menipis (misal < 10)
+        $lowStockProducts = Product::where('stock', '<', 10)
+            ->orderBy('stock', 'asc')
+            ->take(10)
+            ->get();
+
+        // 3. Statistik Kategori (Revenue per category)
+        $categoryStats = OrderItem::join('products', 'order_items.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->select('categories.name', DB::raw('SUM(order_items.qty) as total_sold'), DB::raw('SUM(order_items.price * order_items.qty) as total_revenue'))
+            ->groupBy('categories.id', 'categories.name')
+            ->get();
+
+        return view('admin.reports.index', compact('labels', 'data', 'lowStockProducts', 'categoryStats'));
     }
 }

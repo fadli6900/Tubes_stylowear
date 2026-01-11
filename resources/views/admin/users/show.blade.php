@@ -1,91 +1,81 @@
-<x-admin-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('User Details') }}
-        </h2>
-    </x-slot>
+@extends('admin.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-medium mb-4">User Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <strong>Name:</strong> {{ $user->name }}
-                        </div>
-                        <div>
-                            <strong>Email:</strong> {{ $user->email }}
-                        </div>
-                        <div>
-                            <strong>Phone:</strong> {{ $user->phone ?? '-' }}
-                        </div>
-                        <div>
-                            <strong>Address:</strong> {{ $user->address ?? '-' }}
-                        </div>
-                        <div>
-                            <strong>City:</strong> {{ $user->city ?? '-' }}
-                        </div>
-                        <div>
-                            <strong>Postal Code:</strong> {{ $user->postal_code ?? '-' }}
-                        </div>
-                        <div>
-                            <strong>Country:</strong> {{ $user->country ?? '-' }}
-                        </div>
-                        <div>
-                            <strong>Role:</strong> {{ $user->role ?? 'user' }}
-                        </div>
-                        <div>
-                            <strong>Joined:</strong> {{ $user->created_at->format('d M Y') }}
-                        </div>
-                    </div>
+@section('content')
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-light text-white">Detail User: {{ $user->name }}</h1>
+        <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors">
+            Kembali
+        </a>
+    </div>
 
-                    <div class="mt-8">
-                        <h4 class="text-lg font-medium mb-4">Opsi Pesanan</h4>
-                        @if($orders->isEmpty())
-                            <p class="text-gray-500">No orders found for this user.</p>
-                        @else
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($orders as $order)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $order->id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->created_at->format('d M Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                                @if($order->status == 'pending') bg-yellow-100 text-yellow-800
-                                                @elseif($order->status == 'processing') bg-blue-100 text-blue-800
-                                                @elseif($order->status == 'shipped') bg-indigo-100 text-indigo-800
-                                                @elseif($order->status == 'delivered' || $order->status == 'completed') bg-green-100 text-green-800
-                                                @else bg-red-100 text-red-800 @endif">
-                                                {{ ucfirst($order->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('admin.orders.show', $order) }}" class="text-indigo-600 hover:text-indigo-900">View Details</a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
-                    </div>
-
-                    <div class="mt-6">
-                        <a href="{{ route('admin.users.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back to Users</a>
-                    </div>
-                </div>
+    <!-- User Info -->
+    <div class="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
+        <h2 class="text-xl font-medium text-white mb-4">Informasi User</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-zinc-400">
+            <div>
+                <span class="block text-xs uppercase text-zinc-500">Nama</span>
+                <span class="text-zinc-200">{{ $user->name }}</span>
+            </div>
+            <div>
+                <span class="block text-xs uppercase text-zinc-500">Email</span>
+                <span class="text-zinc-200">{{ $user->email }}</span>
+            </div>
+            <div>
+                <span class="block text-xs uppercase text-zinc-500">Bergabung Sejak</span>
+                <span class="text-zinc-200">{{ $user->created_at->format('d M Y') }}</span>
+            </div>
+            <div>
+                <span class="block text-xs uppercase text-zinc-500">Role</span>
+                <span class="text-zinc-200">{{ ucfirst($user->role ?? 'User') }}</span>
             </div>
         </div>
     </div>
-</x-admin-layout>
+
+    <!-- Order History -->
+    <div class="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
+        <div class="p-6 border-b border-white/10">
+            <h2 class="text-xl font-medium text-white">Riwayat Pesanan</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-zinc-400">
+                <thead class="bg-white/5 text-zinc-200 uppercase font-medium">
+                    <tr>
+                        <th class="px-6 py-4">Order ID</th>
+                        <th class="px-6 py-4">Total</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Tanggal</th>
+                        <th class="px-6 py-4 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                    @forelse($orders as $order)
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4 font-medium text-white">#{{ $order->id }}</td>
+                        <td class="px-6 py-4">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 text-xs rounded-full
+                                {{ $order->status === 'selesai' ? 'bg-emerald-500/20 text-emerald-400' :
+                                ($order->status === 'pending' ? 'bg-orange-500/20 text-orange-400' :
+                                ($order->status === 'pemrosesan' ? 'bg-blue-500/20 text-blue-400' :
+                                ($order->status === 'shipping' ? 'bg-indigo-500/20 text-indigo-400' :
+                                'bg-zinc-500/20 text-zinc-400'))) }}">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">{{ $order->created_at->format('d M Y') }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{{ route('admin.orders.show', $order) }}" class="text-indigo-400 hover:text-indigo-300">Detail</a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-zinc-500">User ini belum melakukan pemesanan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endsection
