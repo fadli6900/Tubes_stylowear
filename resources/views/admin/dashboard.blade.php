@@ -112,6 +112,25 @@
         </div>
     </div>
 
+    {{-- CHARTS SECTION --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {{-- Daily Sales Chart --}}
+        <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+            <h3 class="text-lg font-medium text-white mb-6">Grafik Penjualan Harian (7 Hari)</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="dailySalesChart"></canvas>
+            </div>
+        </div>
+
+        {{-- Monthly Sales Chart --}}
+        <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+            <h3 class="text-lg font-medium text-white mb-6">Grafik Penjualan Bulanan</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="monthlySalesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     {{-- BOTTOM SECTION --}}
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
@@ -190,5 +209,110 @@
         </div>
 
     </div>
+
+    {{-- USERS LIST SECTION --}}
+    <div id="users-list" class="bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5 flex justify-between items-center">
+            <h3 class="text-lg font-medium text-white">Users</h3>
+            <a href="{{ route('admin.users.index') }}" class="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">View All</a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-zinc-400">
+                <thead class="bg-white/5 text-zinc-200 uppercase font-medium text-xs">
+                    <tr>
+                        <th class="px-6 py-4">Name</th>
+                        <th class="px-6 py-4">Email</th>
+                        <th class="px-6 py-4">Phone</th>
+                        <th class="px-6 py-4">City</th>
+                        <th class="px-6 py-4 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    @forelse($latestUsers as $user)
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4 font-medium text-white">{{ $user->name }}</td>
+                        <td class="px-6 py-4">{{ $user->email }}</td>
+                        <td class="px-6 py-4">{{ $user->phone ?? '-' }}</td>
+                        <td class="px-6 py-4">{{ $user->city ?? '-' }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{{ route('admin.users.show', $user) }}" class="text-zinc-400 hover:text-white transition-colors">
+                                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-zinc-500">No users found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+{{-- Chart.js Script --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Config Dark Mode untuk Chart
+        Chart.defaults.color = '#a1a1aa'; // text-zinc-400
+        Chart.defaults.borderColor = '#3f3f46'; // border-zinc-700
+
+        // 1. Grafik Harian
+        const dailyCtx = document.getElementById('dailySalesChart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($dailyLabels) !!},
+                datasets: [{
+                    label: 'Pendapatan',
+                    data: {!! json_encode($dailyData) !!},
+                    borderColor: '#6366f1', // Indigo 500
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#6366f1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#27272a' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Grafik Bulanan
+        const monthlyCtx = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($monthlyLabels) !!},
+                datasets: [{
+                    label: 'Pendapatan',
+                    data: {!! json_encode($monthlyData) !!},
+                    backgroundColor: '#10b981', // Emerald 500
+                    borderRadius: 4,
+                    hoverBackgroundColor: '#34d399'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#27272a' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
 @endsection

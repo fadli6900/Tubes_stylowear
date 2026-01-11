@@ -15,6 +15,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::with('category');
+        $query->where('stock', '>', 0);
 
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
@@ -133,12 +134,37 @@ class ProductController extends Controller
     public function addToCart(string $id)
     {
         $product = Product::findOrFail($id);
-        $cart = session()->get('cart', []);
 
-        $cart[$id] = isset($cart[$id]) ? $cart[$id] + 1 : 1;
+        if ($product->stock <= 0) {
+            return redirect()->back()->with('error', 'Maaf, stok produk ini sudah habis.');
+        }
+
+        $cart = session()->get('cart', []);
+        $cartKey = $id; // Gunakan ID sebagai key (default tanpa size)
+
+        // Cek quantity saat ini (handle format array atau integer lama)
+        $currentQty = isset($cart[$cartKey]) ? (is_array($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : $cart[$cartKey]) : 0;
+
+        if (($currentQty + 1) > $product->stock) {
+            return redirect()->back()->with('error', 'Maaf, jumlah pesanan melebihi stok yang tersedia (' . $product->stock . ').');
+        }
+
+        if (isset($cart[$cartKey]) && is_array($cart[$cartKey])) {
+            $cart[$cartKey]['quantity']++;
+        } else {
+            // Simpan dengan format array yang konsisten dengan CartController
+            $cart[$cartKey] = [
+                "product_id" => $product->id,
+                "name" => $product->name,
+                "quantity" => $currentQty + 1,
+                "price" => $product->price,
+                "image" => $product->image ?? null,
+                "size" => null
+            ];
+        }
 
         session()->put('cart', $cart);
 
-        return redirect()->back()->with('success', 'Product added to cart successfully!');
+        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
 }

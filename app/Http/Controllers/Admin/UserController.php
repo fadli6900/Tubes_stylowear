@@ -16,7 +16,8 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return view('admin.users.show', compact('user'));
+        $orders = $user->orders()->with('items', 'payment')->get();
+        return view('admin.users.show', compact('user', 'orders'));
     }
 
     // Add other methods as needed

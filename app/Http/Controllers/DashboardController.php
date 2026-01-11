@@ -31,6 +31,8 @@ class DashboardController extends Controller
             'bestSellingProducts' => Product::orderByDesc('sold')
                 ->limit(5)
                 ->get(),
+
+            'users' => User::latest()->get(),
         ]);
     }
 }

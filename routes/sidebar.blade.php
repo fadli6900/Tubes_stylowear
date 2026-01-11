@@ -59,7 +59,7 @@
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit" class="flex items-center w-full px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-gray-700 transition-colors">
-                <span class="ml-3">Logout</span>
+                <span class="ml-3">Keluar</span>
             </button>
         </form>
     </div>

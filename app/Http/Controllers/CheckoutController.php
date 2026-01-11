@@ -42,7 +42,11 @@ class CheckoutController extends Controller
 
         // Calculate total again to ensure it's up-to-date
         $total = 0;
-        foreach($cart as $item) {
+        foreach($cart as $key => $item) {
+            $product = \App\Models\Product::find($item['product_id'] ?? $key);
+            if (!$product || $product->stock < $item['quantity']) {
+                return redirect()->route('cart.index')->with('error', 'Stok untuk produk ' . ($product->name ?? 'Item') . ' tidak mencukupi. Stok saat ini: ' . ($product->stock ?? 0));
+            }
             $total += $item['price'] * $item['quantity'];
         }
 
@@ -58,16 +62,17 @@ class CheckoutController extends Controller
                 ]);
 
                 // Simpan setiap item di keranjang ke tabel order_items
-                foreach ($cart as $id => $details) {
+                foreach ($cart as $key => $details) {
                     $orderItem = new OrderItem();
                     $orderItem->order_id = $order->id;
-                    $orderItem->product_id = $id;
+                    // Gunakan product_id yang tersimpan, atau fallback ke key jika data lama
+                    $orderItem->product_id = $details['product_id'] ?? $key;
                     $orderItem->qty = $details['quantity'];
                     $orderItem->price = $details['price'];
                     $orderItem->save();
 
                     // Kurangi stok produk
-                    $product = \App\Models\Product::find($id);
+                    $product = \App\Models\Product::find($orderItem->product_id);
                     if ($product) {
                         $product->decrement('stock', $details['quantity']);
                     }

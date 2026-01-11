@@ -116,10 +116,22 @@
                 <div class="category">{{ $product->category->name ?? 'Fashion' }}</div>
                 <h1>{{ $product->name }}</h1>
                 <div class="price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                <div style="margin-bottom: 15px; color: #555; font-weight: 500;">
+                    Stok Tersedia: <strong>{{ $product->stock }}</strong>
+                </div>
                 <p class="description">{{ $product->description }}</p>
                 
                 <form action="{{ route('cart.add', $product->id) }}" method="POST">
                     @csrf
+                    <div style="margin-bottom: 15px;">
+                        <label for="size" style="display: block; margin-bottom: 5px; font-weight: bold;">Ukuran:</label>
+                        <select name="size" id="size" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </div>
                     <div style="margin-bottom: 15px; display: flex; align-items: center;">
                         <label for="quantity" style="margin-right: 10px; font-weight: bold;">Jumlah:</label>
                         <input type="number" name="quantity" id="quantity" value="1" min="1" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">

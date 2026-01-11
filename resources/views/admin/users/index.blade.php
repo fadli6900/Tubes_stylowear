@@ -28,7 +28,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->phone ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->city ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('admin.users.show', $user) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                    <a href="{{ route('admin.users.show', $user) }}" class="text-indigo-600 hover:text-indigo-900">View</a> |
+                                    <a href="{{ route('admin.users.show', $user) }}#orders" class="text-indigo-600 hover:text-indigo-900">View Orders</a>
                                 </td>
                             </tr>
                             @endforeach

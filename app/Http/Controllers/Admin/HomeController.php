@@ -15,6 +15,7 @@ class HomeController extends Controller
 
         // Query dasar untuk produk, load relasi category untuk efisiensi
         $query = Product::with('category')->latest();
+        $query->where('stock', '>', 0);
 
         // Logika Filter: Jika ada input 'category_id' dari search bar
         if ($request->filled('category_id')) {

@@ -23,15 +23,26 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
         $quantity = (int) $request->input('quantity', 1);
         if ($quantity < 1) $quantity = 1;
+        $size = $request->input('size'); // Ambil input ukuran
 
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity'] += $quantity;
+        // Buat key unik kombinasi ID dan Ukuran (jika ada ukuran)
+        $cartKey = $size ? $id . '_' . $size : $id;
+
+        $currentQty = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
+        if (($currentQty + $quantity) > $product->stock) {
+            return redirect()->back()->with('error', 'Maaf, jumlah pesanan melebihi stok yang tersedia (' . $product->stock . ').');
+        }
+
+        if(isset($cart[$cartKey])) {
+            $cart[$cartKey]['quantity'] += $quantity;
         } else {
-            $cart[$id] = [
+            $cart[$cartKey] = [
+                "product_id" => $product->id, // Simpan ID asli produk
                 "name" => $product->name,
                 "quantity" => $quantity,
                 "price" => $product->price,
-                "image" => $product->image ?? null // Asumsi ada kolom image
+                "image" => $product->image ?? null,
+                "size" => $size // Simpan ukuran
             ];
         }
 
@@ -43,6 +54,13 @@ class CartController extends Controller
     {
         if($request->id && $request->quantity){
             $cart = session()->get('cart');
+
+            $productId = $cart[$request->id]['product_id'] ?? $request->id;
+            $product = Product::find($productId);
+            if ($product && $request->quantity > $product->stock) {
+                return redirect()->back()->with('error', 'Maaf, jumlah pesanan melebihi stok yang tersedia (' . $product->stock . ').');
+            }
+
             $cart[$request->id]["quantity"] = $request->quantity;
             session()->put('cart', $cart);
             return redirect()->back()->with('success', 'Keranjang berhasil diperbarui!');

@@ -97,20 +97,17 @@ Route::middleware(['auth', 'admin'])
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         Route::patch('/orders/{order}/confirm', [\App\Http\Controllers\Admin\OrderController::class, 'confirm'])->name('orders.confirm');
+        Route::get('users', function () {
+            return redirect()->route('admin.dashboard');
+        });
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
+        // Route Laporan
+        Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+
         // Admin Logout Route
-        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+        Route::post('/logout', [AuthController::class, 'logout'])
             ->name('logout');
-});
-
-
-// Routes untuk Login & Register
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
 });
 
 
@@ -119,9 +116,13 @@ Route::middleware('guest')->group(function () {
 | Auth Routes (Laravel Breeze)
 |--------------------------------------------------------------------------
 */
-require __DIR__.'/auth.php'; 
-// Komentari baris di atas jika Anda ingin menggunakan AuthController custom sepenuhnya,
-// atau pastikan route custom Anda berada DI BAWAH baris ini.
+require __DIR__.'/auth.php';
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
