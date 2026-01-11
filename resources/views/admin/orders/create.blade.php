@@ -35,10 +35,9 @@
     <select name="status" required>
         <option value="">Pilih Status</option>
         <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-        <option value="processing" {{ old('status') == 'processing' ? 'selected' : '' }}>Processing</option>
-        <option value="shipped" {{ old('status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
-        <option value="delivered" {{ old('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
-        <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+        <option value="pemrosesan" {{ old('status') == 'pemrosesan' ? 'selected' : '' }}>Pemrosesan</option>
+        <option value="shipping" {{ old('status') == 'shipping' ? 'selected' : '' }}>Shipping</option>
+        <option value="selesai" {{ old('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
     </select>
     <br><br>
 

@@ -27,13 +27,12 @@
                         <td class="px-6 py-4">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                         <td class="px-6 py-4">
                             <span class="px-3 py-1 text-xs rounded-full
-                                {{ $order->status === 'completed'
+                                {{ $order->status === 'selesai'
                                     ? 'bg-emerald-500/20 text-emerald-400'
                                     : ($order->status === 'pending' ? 'bg-orange-500/20 text-orange-400' :
-                                    ($order->status === 'processing' ? 'bg-blue-500/20 text-blue-400' :
-                                    ($order->status === 'shipped' ? 'bg-indigo-500/20 text-indigo-400' :
-                                    ($order->status === 'delivered' ? 'bg-green-500/20 text-green-400' :
-                                    'bg-red-500/20 text-red-400')))) }}">
+                                    ($order->status === 'pemrosesan' ? 'bg-blue-500/20 text-blue-400' :
+                                    ($order->status === 'shipping' ? 'bg-indigo-500/20 text-indigo-400' :
+                                    'bg-zinc-500/20 text-zinc-400'))) }}">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
@@ -45,6 +44,18 @@
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" class="text-emerald-400 hover:text-emerald-300">Konfirmasi</button>
+                            </form>
+                            @elseif($order->status === 'pemrosesan')
+                            <form action="{{ route('admin.orders.shipping', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Ubah status menjadi dikirim?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="text-indigo-400 hover:text-indigo-300">Kirim</button>
+                            </form>
+                            @elseif($order->status === 'shipping')
+                            <form action="{{ route('admin.orders.complete', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Selesaikan pesanan ini?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="text-emerald-400 hover:text-emerald-300">Selesai</button>
                             </form>
                             @endif
                             <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this order?');">

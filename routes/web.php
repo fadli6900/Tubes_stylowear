@@ -97,6 +97,8 @@ Route::middleware(['auth', 'admin'])
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         Route::patch('/orders/{order}/confirm', [\App\Http\Controllers\Admin\OrderController::class, 'confirm'])->name('orders.confirm');
+        Route::patch('/orders/{order}/shipping', [\App\Http\Controllers\Admin\OrderController::class, 'shipping'])->name('orders.shipping');
+        Route::patch('/orders/{order}/complete', [\App\Http\Controllers\Admin\OrderController::class, 'complete'])->name('orders.complete');
         Route::get('users', function () {
             return redirect()->route('admin.dashboard');
         });

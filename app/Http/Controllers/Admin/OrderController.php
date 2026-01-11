@@ -66,7 +66,19 @@ class OrderController extends Controller
 
     public function confirm(Order $order)
     {
-        $order->update(['status' => 'processing']);
+        $order->update(['status' => 'pemrosesan']);
         return redirect()->back()->with('success', 'Pesanan berhasil dikonfirmasi.');
+    }
+
+    public function shipping(Order $order)
+    {
+        $order->update(['status' => 'shipping']);
+        return redirect()->back()->with('success', 'Status pesanan diubah menjadi Shipping.');
+    }
+
+    public function complete(Order $order)
+    {
+        $order->update(['status' => 'selesai']);
+        return redirect()->back()->with('success', 'Status pesanan diubah menjadi Selesai.');
     }
 }

@@ -47,12 +47,11 @@
                     <span class="w-32">Status</span>
                     <span>: 
                         <span class="px-3 py-1 text-xs rounded-full
-                            {{ $order->status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' : 
+                            {{ $order->status === 'selesai' ? 'bg-emerald-500/20 text-emerald-400' : 
                             ($order->status === 'pending' ? 'bg-orange-500/20 text-orange-400' : 
-                            ($order->status === 'processing' ? 'bg-blue-500/20 text-blue-400' : 
-                            ($order->status === 'shipped' ? 'bg-indigo-500/20 text-indigo-400' : 
-                            ($order->status === 'delivered' ? 'bg-green-500/20 text-green-400' : 
-                            'bg-red-500/20 text-red-400')))) }}">
+                            ($order->status === 'pemrosesan' ? 'bg-blue-500/20 text-blue-400' : 
+                            ($order->status === 'shipping' ? 'bg-indigo-500/20 text-indigo-400' : 
+                            'bg-zinc-500/20 text-zinc-400'))) }}">
                             {{ ucfirst($order->status) }}
                         </span>
                     </span>
