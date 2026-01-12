@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -66,8 +68,18 @@ class OrderController extends Controller
 
     public function confirm(Order $order)
     {
-        $order->update(['status' => 'pemrosesan']);
-        return redirect()->back()->with('success', 'Pesanan berhasil dikonfirmasi.');
+        DB::transaction(function () use ($order) {
+            // 1. Ubah status order menjadi 'pemrosesan'
+            $order->update(['status' => 'pemrosesan']);
+            
+            // 2. Ubah status pembayaran menjadi 'paid' (jika ada datanya)
+            $payment = Payment::where('order_id', $order->id)->first();
+            if ($payment) {
+                $payment->update(['status' => 'confirmed']);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Pembayaran dikonfirmasi. Status pesanan diubah menjadi Pemrosesan.');
     }
 
     public function shipping(Order $order)

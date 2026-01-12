@@ -25,6 +25,9 @@ class DashboardController extends Controller
         $latestOrders = Order::with('user')->latest()->take(5)->get();
         $bestSellingProducts = Product::latest()->take(5)->get();
         $latestUsers = User::latest()->take(5)->get();
+        
+        // Ambil pesanan pending untuk dikonfirmasi
+        $pendingOrders = Order::where('status', 'pending')->with('user')->latest()->get();
 
         // --- Grafik Penjualan Harian (7 Hari Terakhir) ---
         $dailyStats = Order::selectRaw('DATE(created_at) as date, SUM(total) as total')
@@ -60,7 +63,8 @@ class DashboardController extends Controller
             'dailyLabels',
             'dailyData',
             'monthlyLabels',
-            'monthlyData'
+            'monthlyData',
+            'pendingOrders'
         ));
     }
 }

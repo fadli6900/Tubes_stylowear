@@ -4,6 +4,13 @@
 <div class="space-y-12 fade-in">
 
     {{-- HEADER --}}
+    @if(session('success'))
+    <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-3 rounded-xl flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        {{ session('success') }}
+    </div>
+    @endif
+
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 class="text-3xl font-light text-white">Dashboard</h1>
@@ -109,6 +116,49 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- PENDING ORDERS SECTION --}}
+    <div class="bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5 flex justify-between items-center">
+            <h3 class="text-lg font-medium text-white">Konfirmasi Pembayaran (Pending)</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-zinc-400">
+                <thead class="bg-white/5 text-zinc-200 uppercase font-medium text-xs">
+                    <tr>
+                        <th class="px-6 py-4">Order ID</th>
+                        <th class="px-6 py-4">Customer</th>
+                        <th class="px-6 py-4">Total</th>
+                        <th class="px-6 py-4">Metode</th>
+                        <th class="px-6 py-4 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    @forelse($pendingOrders as $order)
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4 font-medium text-white">#{{ $order->id }}</td>
+                        <td class="px-6 py-4">{{ $order->user->name ?? 'Guest' }}</td>
+                        <td class="px-6 py-4">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4">{{ $order->payment_method }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <form action="{{ route('admin.orders.confirm', $order->id) }}" method="POST" class="inline-block">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-lg text-xs font-medium transition-colors" onclick="return confirm('Konfirmasi pembayaran ini?')">
+                                    Konfirmasi
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-zinc-500">Tidak ada pesanan yang perlu dikonfirmasi.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
