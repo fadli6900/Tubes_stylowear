@@ -25,6 +25,7 @@ Route::get('/', function (Request $request) {
 
     // Query Produk dengan Filter
     $query = Product::with('category')->latest();
+    $query->where('is_active', true);
 
     if ($request->filled('category_id')) {
         $query->where('category_id', $request->category_id);
@@ -39,14 +40,13 @@ Route::get('/', function (Request $request) {
 });
 
 Route::get('/welcome', function () {
-    $products = Product::latest()->take(12)->get();
+    $products = Product::where('is_active', true)->latest()->take(12)->get();
     return view('welcome', compact('products'));
 })->name('welcome');
 
 // Route Detail Produk (Publik/Tanpa Login)
-Route::get('/product/{product}', function (Product $product) {
-    return view('product-detail', compact('product'));
-})->name('product.show');
+// Menggunakan ProductController@show yang sudah memiliki validasi is_active
+Route::get('/product/{id}', [\App\Http\Controllers\ProductController::class, 'show'])->name('product.show');
 
 // Route Keranjang (Cart) - Dipindahkan ke sini agar bisa diakses tanpa login
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -95,6 +95,7 @@ Route::middleware(['auth', 'admin'])
 
         Route::resource('categories', CategoryController::class);
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+        Route::patch('/products/{id}/toggle', [\App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle');
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         Route::patch('/orders/{order}/confirm', [\App\Http\Controllers\Admin\OrderController::class, 'confirm'])->name('orders.confirm');
         Route::patch('/orders/{order}/shipping', [\App\Http\Controllers\Admin\OrderController::class, 'shipping'])->name('orders.shipping');

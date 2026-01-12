@@ -93,4 +93,13 @@ class ProductController extends Controller
             ->route('admin.products.index')
             ->with('success', 'Produk berhasil dihapus');
     }
+
+    public function toggleStatus(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->is_active = !$product->is_active;
+        $product->save();
+
+        return redirect()->back()->with('success', 'Status produk berhasil diperbarui (' . ($product->is_active ? 'Aktif' : 'Non-Aktif') . ').');
+    }
 }

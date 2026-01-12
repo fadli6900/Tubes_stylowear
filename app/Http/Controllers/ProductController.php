@@ -16,6 +16,7 @@ class ProductController extends Controller
     {
         $query = Product::with('category');
         $query->where('stock', '>', 0);
+        $query->where('is_active', true);
 
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
@@ -70,7 +71,10 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $product = Product::with('category')->findOrFail($id);
-        return view('products.show', compact('product'));
+        if (!$product->is_active) {
+            return redirect()->route('products.index')->with('error', 'Produk tidak tersedia.');
+        }
+        return view('product-detail', compact('product'));
     }
 
     /**
@@ -134,6 +138,10 @@ class ProductController extends Controller
     public function addToCart(string $id)
     {
         $product = Product::findOrFail($id);
+
+        if (!$product->is_active) {
+            return redirect()->back()->with('error', 'Maaf, produk ini sedang tidak aktif.');
+        }
 
         if ($product->stock <= 0) {
             return redirect()->back()->with('error', 'Maaf, stok produk ini sudah habis.');

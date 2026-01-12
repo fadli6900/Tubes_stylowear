@@ -20,6 +20,10 @@ class CartController extends Controller
     public function add(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+        if (!$product->is_active) {
+            return redirect()->back()->with('error', 'Maaf, produk ini sedang tidak aktif.');
+        }
+
         $cart = session()->get('cart', []);
         $quantity = (int) $request->input('quantity', 1);
         if ($quantity < 1) $quantity = 1;

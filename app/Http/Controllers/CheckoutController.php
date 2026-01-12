@@ -44,8 +44,8 @@ class CheckoutController extends Controller
         $total = 0;
         foreach($cart as $key => $item) {
             $product = \App\Models\Product::find($item['product_id'] ?? $key);
-            if (!$product || $product->stock < $item['quantity']) {
-                return redirect()->route('cart.index')->with('error', 'Stok untuk produk ' . ($product->name ?? 'Item') . ' tidak mencukupi. Stok saat ini: ' . ($product->stock ?? 0));
+            if (!$product || $product->stock < $item['quantity'] || !$product->is_active) {
+                return redirect()->route('cart.index')->with('error', 'Produk ' . ($product->name ?? 'Item') . ' tidak mencukupi atau tidak aktif.');
             }
             $total += $item['price'] * $item['quantity'];
         }

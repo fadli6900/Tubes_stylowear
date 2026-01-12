@@ -38,6 +38,7 @@
                         <th class="px-6 py-4">Harga</th>
                         <th class="px-6 py-4">Stok</th>
                         <th class="px-6 py-4">Deskripsi</th>
+                        <th class="px-6 py-4">Status</th>
                         <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -77,6 +78,11 @@
                                 {{ Str::limit($product->description, 100) }}
                             </p>
                         </td>
+                        <td class="px-6 py-5">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $product->is_active ? 'Aktif' : 'Non-Aktif' }}
+                            </span>
+                        </td>
                         <td class="px-6 py-5 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('admin.products.edit', $product) }}"
@@ -86,6 +92,16 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
                                 </a>
+
+                                <form action="{{ route('admin.products.toggle', $product->id) }}" method="POST" class="inline-block">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="p-2 rounded-lg hover:bg-yellow-50 text-yellow-600 transition duration-200" title="{{ $product->is_active ? 'Non-aktifkan' : 'Aktifkan' }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                        </svg>
+                                    </button>
+                                </form>
 
                                 <form action="{{ route('admin.products.destroy', $product) }}"
                                       method="POST"
