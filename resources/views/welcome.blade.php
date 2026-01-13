@@ -230,6 +230,122 @@
         .btn-add:hover {
             background: #dc143c;
         }
+
+        /* Modern Search Bar Styles */
+        .search-wrapper {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            z-index: 50;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 50px;
+            padding: 5px 5px 5px 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 8px 30px rgba(220, 20, 60, 0.15);
+            border-color: rgba(220, 20, 60, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .search-select {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            color: #555;
+            outline: none;
+            cursor: pointer;
+            padding-right: 15px;
+            border-right: 1px solid #eee;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+            background: transparent;
+            padding: 10px 0;
+        }
+
+        .search-btn-submit {
+            background: #dc143c;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+
+        .search-btn-submit:hover {
+            background: #b01030;
+        }
+
+        /* Suggestions Dropdown */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            margin-top: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+            display: none;
+            border: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background: #f8f9fa; }
+
+        .suggestion-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            background: #eee;
+        }
+
+        .suggestion-details h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .suggestion-details span {
+            font-size: 12px;
+            color: #dc143c;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -295,11 +411,11 @@
 
 <div class="container">
     <!-- Search Bar & Filter Kategori -->
-    <div style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <form action="{{ url('/') }}" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
+    <div class="search-wrapper">
+        <form action="{{ url('/') }}" method="GET" class="search-box">
             
             <!-- Dropdown Kategori -->
-            <select name="category_id" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
+            <select name="category_id" class="search-select">
                 <option value="">Semua Kategori</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -309,11 +425,19 @@
             </select>
 
             <!-- Input Pencarian -->
-            <input type="text" name="search" placeholder="Cari nama produk..." value="{{ request('search') }}" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            <input type="text" name="search" id="searchInput" class="search-input" placeholder="Cari produk impianmu..." value="{{ request('search') }}" autocomplete="off">
 
             <!-- Tombol Cari -->
-            <button type="submit" style="background: #dc143c; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-weight: 600;">Cari</button>
+            <button type="submit" class="search-btn-submit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
         </form>
+        
+        <!-- Suggestions Container -->
+        <div id="suggestionsBox" class="suggestions-dropdown"></div>
     </div>
 
     <h2 class="section-title">Koleksi Terbaru</h2>
@@ -339,7 +463,11 @@
                 </div>
             </div>
         @empty
-            <p style="text-align: center; grid-column: 1/-1; color: #888;">Belum ada produk yang tersedia.</p>
+            @if(request('search') || request('category_id'))
+                <p style="text-align: center; grid-column: 1/-1; color: #888; padding: 40px 0;">Tidak ada produk yang cocok dengan pencarian Anda.</p>
+            @else
+                <p style="text-align: center; grid-column: 1/-1; color: #888; padding: 40px 0;">Belum ada produk yang tersedia saat ini.</p>
+            @endif
         @endforelse
     </div>
 </div>
@@ -413,6 +541,56 @@ window.onclick = function(event) {
         modal.style.display = 'none';
     }
 }
+
+// Search Suggestions Logic
+const searchInput = document.getElementById('searchInput');
+const suggestionsBox = document.getElementById('suggestionsBox');
+let timeout = null;
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(timeout);
+    const query = this.value;
+
+    if(query.length < 2) {
+        suggestionsBox.style.display = 'none';
+        return;
+    }
+
+    // Debounce untuk mengurangi request
+    timeout = setTimeout(() => {
+        fetch(`{{ route('products.search.suggestions') }}?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.length > 0) {
+                    suggestionsBox.innerHTML = '';
+                    data.forEach(product => {
+                        const imgUrl = product.image ? `{{ asset('storage') }}/${product.image}` : 'https://via.placeholder.com/40';
+                        const price = new Intl.NumberFormat('id-ID').format(product.price);
+                        const item = `
+                            <a href="/product/${product.id}" class="suggestion-item">
+                                <img src="${imgUrl}" class="suggestion-thumb" alt="${product.name}">
+                                <div class="suggestion-details">
+                                    <h4>${product.name}</h4>
+                                    <span>Rp ${price}</span>
+                                </div>
+                            </a>
+                        `;
+                        suggestionsBox.innerHTML += item;
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+    }, 300);
+});
+
+// Close suggestions when clicking outside
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.style.display = 'none';
+    }
+});
 </script>
 
 </body>

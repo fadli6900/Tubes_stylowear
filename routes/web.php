@@ -48,6 +48,9 @@ Route::get('/welcome', function () {
 // Menggunakan ProductController@show yang sudah memiliki validasi is_active
 Route::get('/product/{id}', [\App\Http\Controllers\ProductController::class, 'show'])->name('product.show');
 
+// Route Search Suggestions (AJAX)
+Route::get('/products/search-suggestions', [\App\Http\Controllers\ProductController::class, 'searchSuggestions'])->name('products.search.suggestions');
+
 // Route Keranjang (Cart) - Dipindahkan ke sini agar bisa diakses tanpa login
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');

@@ -1,2 +1,0 @@
-- [x] Update routes/web.php to redirect /admin/users to /admin/dashboard
-- [x] Update resources/views/admin/dashboard.blade.php to include a users list section with id="users-list"

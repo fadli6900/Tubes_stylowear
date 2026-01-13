@@ -175,4 +175,24 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
+
+    /**
+     * Get search suggestions via AJAX.
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $query = $request->get('query');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $suggestions = Product::where('name', 'like', '%' . $query . '%')
+            ->where('is_active', true)
+            ->select('id', 'name', 'price', 'image')
+            ->take(5)
+            ->get();
+
+        return response()->json($suggestions);
+    }
 }
